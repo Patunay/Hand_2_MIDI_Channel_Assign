@@ -1,0 +1,15 @@
+Try new order:
+- Crop interest area
+- Set keyboard Bounds
+- Create Matrix with that info
+
+Simplifies a lot of steps and makes the angle calculation redundant
+
+Then:
+
+- Set white/black key levels
+- Sync Onsets
+- Synqued Midi Data
+- Pre_Comp_Prep
+- Compare
+- Consolidate
