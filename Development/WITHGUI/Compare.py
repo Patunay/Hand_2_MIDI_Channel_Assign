@@ -2,69 +2,38 @@ import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from tqdm import tqdm
-# import tqdm
+
 
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(static_image_mode=False)
 mpDraw = mp.solutions.drawing_utils
 
 
-def Framerescale(frame,angle,cropped_axis):
-    def rescaleFrame(frame, scale=0.75):
-        width = int(frame.shape[1] * scale)
-        height = int(frame.shape[0] * scale)
-        dimensions = (width, height)
-        return cv.resize(frame, dimensions, interpolation=cv.INTER_AREA)
-
-    vid_rotated = rotate_image(frame,angle)
-    vidCropped = vid_rotated[cropped_axis[0]:cropped_axis[1],cropped_axis[2]:cropped_axis[3]]   # Correct crop axis definition
-    # vid_processed = rescaleFrame(vidCropped,scale=0.6)
-    return vidCropped
-
-def rotate_image(mat, angle):
-    """
-    Rotates an image (angle in degrees) and expands image to avoid cropping
-    """
-
-    height, width = mat.shape[:2] # image shape has 3 dimensions
-    image_center = (width/2, height/2) # getRotationMatrix2D needs coordinates in reverse order (width, height) compared to shape
-
-    rotation_mat = cv.getRotationMatrix2D(image_center, angle, 1.)
-
-    # rotation calculates the cos and sin, taking absolutes of those.
-    abs_cos = abs(rotation_mat[0,0]) 
-    abs_sin = abs(rotation_mat[0,1])
-
-    # find the new width and height bounds
-    bound_w = int(height * abs_sin + width * abs_cos)
-    bound_h = int(height * abs_cos + width * abs_sin)
-
-    # subtract old image center (bringing image back to origo) and adding the new image center coordinates
-    rotation_mat[0, 2] += bound_w/2 - image_center[0]
-    rotation_mat[1, 2] += bound_h/2 - image_center[1]
-
-    # rotate image with the new bounds and translated rotation matrix
-    rotated_mat = cv.warpAffine(mat, rotation_mat, (bound_w, bound_h))
-    return rotated_mat
 
 
-def Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):     # Case by case comparison
-    cap = cv.VideoCapture(vidPath)
-    _, frame = cap.read()
-    out_size = Framerescale(frame,angle,crop_region)
-    h,w,_ = out_size.shape
 
-    def img_viewer2(cap,onset,midi_event):
+
+def Compare(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours):     # Case by case comparison
+    cap = cv.VideoCapture(vid_path)
+
+
+    def vid_mid_comp(cap,onset,midi_event):
         # Preliminar preparations
-        index = midi_event-21
-        cap.set(cv.CAP_PROP_POS_MSEC,onset)
+        index = midi_event-21   # To account for offset
+        cap.set(cv.CAP_PROP_POS_MSEC,onset) # Set video position to exact moment
         _, frame = cap.read()
-        pre_process_video = Framerescale(frame,angle,crop_region)
-        out = cv.warpPerspective(pre_process_video, trans_mat, (w,h))
-        hand_detection_raw = out
+
+        cropped_frame = frame[crop_reg[0]:crop_reg[1],crop_reg[2]:crop_reg[3]]
+        trans_frame = cv.warpPerspective(cropped_frame,trans_matrix,(crop_dim[1],crop_dim[0]))
+
+
+        hand_detection_raw = trans_frame
+
+
+
         # Call contour corresponding to relevant case
-        cv.drawContours(out,[stock_contours[index]],0,(0,255,0),-1)
-        contour_border = stock_contours[index]  
+        contour_border = midi_event_with_contours[index]  
+        cv.drawContours(trans_frame,[midi_event_with_contours[index]],0,(0,255,0),-1)   # for Debugging viewer only
 
 # Hand Detection
         def get_hand_data(img):
@@ -89,7 +58,7 @@ def Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):
                         handType ="Left"
                     handnessList.append(handType)
     
-                    for handLms in results.multi_hand_landmarks:    # for each hand?
+                    for handLms in results.multi_hand_landmarks:    # for each hand
                         landmarkList.append(handLms)
 
                         for id, lm in enumerate(handLms.landmark):  # id=landmark, 
@@ -98,7 +67,7 @@ def Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):
                             # print(id, cx,cy) 
                             # if id ==0:  # find location of individual landmark
                             #     cv.circle(frame,(cx,cy), 25,(0,255,0),cv.FILLED)
-                        mpDraw.draw_landmarks(out, handLms, mpHands.HAND_CONNECTIONS)
+                        mpDraw.draw_landmarks(trans_frame, handLms, mpHands.HAND_CONNECTIONS)
             return handnessList,landmarkList
 
 
@@ -130,7 +99,7 @@ def Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):
                             hand_id = 0
                         else:
                             hand_id = 1
-                        cv.circle(out,(cx,cy), 3,(0,255,255),cv.FILLED)
+                        cv.circle(trans_frame,(cx,cy), 3,(0,255,255),cv.FILLED)
                         guess = handness_list[hand_id]
                         return  True, guess
             return False, None
@@ -202,14 +171,13 @@ def Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):
 
     handness_list = []
     pre_proc_list = []
-    total_events = len(synqued_events)
-
+    total_events = len(synqued_midi_data)
 
     midi_pairing_buffer = []
     hand_guess_buffer = []
 
     with tqdm(total=total_events, desc="Processing...",unit="Event") as pbar:
-        for id, event in enumerate(synqued_events):
+        for id, event in enumerate(synqued_midi_data):
             # print(event)
             pre_proc_list.append(id)
             type_check = event[0]
@@ -231,7 +199,7 @@ def Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):
                 midi_vel = int(midi_vel[1])
 
                 if midi_vel != 0:   # Midi Note_On
-                    hand_guess = img_viewer2(cap,onset,midi_event)
+                    hand_guess = vid_mid_comp(cap,onset,midi_event)
 
                     midi_pairing_buffer.append(midi_event)  # index location for midi event and guess are the same
                     hand_guess_buffer.append(hand_guess)
@@ -257,8 +225,8 @@ def Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):
 
 
 
-def main(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours):
-    handness_list = Compare(synqued_events, vidPath,angle,crop_region,trans_mat,stock_contours)
+def main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours):
+    handness_list = Compare(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours)
     return handness_list
 
 if __name__ == "__main__":

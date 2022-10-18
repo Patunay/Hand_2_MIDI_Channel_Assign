@@ -17,9 +17,6 @@ class Keyboard_Area_SetUp_Top:
         self.root.title("Set Key Levels")
         self.vid = self.VideoCapture(vid_path,crop_reg,crop_dim,trans_matrix)
 
-
-
-
         self.trackbar_bl = Scale(self.root, from_=0, to=self.vid.height,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="Black keys Level")
         self.trackbar_bl.pack(anchor=W)
 
