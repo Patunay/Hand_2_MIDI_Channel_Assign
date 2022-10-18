@@ -4,7 +4,7 @@ import Keyboard_Area_SetUp_Bot
 import Set_bl_wh_Lvls
 import Video_Midi_Sync
 import Midi_Onset2Frame
-import New_Pre_Comp_Prep
+import Pre_Comp_Prep
 import Compare
 import Consolidate_Midi
 # import contour_debug
@@ -102,7 +102,7 @@ synqued_midi_data = Midi_Onset2Frame.main(sync_onsets,midi_path)
 
 
 # Final preparations:
-midi_event_with_contours = New_Pre_Comp_Prep.main(crop_dim,bl_wh_lvls)
+midi_event_with_contours = Pre_Comp_Prep.main(crop_dim,bl_wh_lvls)
 # contour_debug.main(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours)
 
 # Main Algorithm
