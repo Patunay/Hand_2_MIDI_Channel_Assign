@@ -25,8 +25,6 @@ _Oct, 2022_
 - Countour assignation for static keys needs refining:
   - For the black keys, they there is a noticable offset between calculated and actual area
 
-### This update achieved:
-
 ### Coming up soon:
 
 - Contour assignation fix:
