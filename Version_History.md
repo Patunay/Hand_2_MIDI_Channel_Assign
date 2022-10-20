@@ -4,32 +4,34 @@
 
 _Oct, 2022_
 
+## Alpha 0.2 update:
+
+- In process..
+
+### Coming up soon:
+
+- In process..
+
+### Eventually:
+
+- In process..
+
+_Oct, 2022_
+
 ## Alpha 0.1 update:
 
 - First working iteration of the algorithm.
--
+- Accuracy: ~82%
+- Countour assignation for static keys needs refining:
+  - For the black keys, they there is a noticable offset between calculated and actual area
 
 ### This update achieved:
 
 ### Coming up soon:
 
-### Eventually:
-
-itor and Max Msp Software.
-
-## On Concepts Ipad app:
-
-### Things to work on:
-
-- Create guides for diferrent intervals( 8ves done)
-- Create assets for different intervals
-- Togable (See only what you want to see)
+- Contour assignation fix:
+  - In the next update, a contour area fine tuning will be added to compensate for any posisble offset.
 
 ### Eventually:
 
-- Figure out a format or create one yourself that allows you to embed all individual layers (voices) of a file in a single one.
-- add support for note velocity control on empty space abvove or below maybe even use colors since its fairly easy to completely hide them.
-- Try creating files in illustrator.
-- Create texture generators using np.arrays!!
-- Experiment with harmony.
-- Create AI(??) to detect time information in score and expand lenght dynamically.
+- Refine logical gates at Compare.py to increase output accuracy as well as improving the overall algoruithm speed.
