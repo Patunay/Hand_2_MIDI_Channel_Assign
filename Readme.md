@@ -15,7 +15,7 @@ Hands2MIDIChannels is powered by openCV, Mediapipe, and MIDO.
 - Archive:
   - Stores the code for all obsolete versions of Hands2MIDIChannels since the first version.
 - Assets:
-  - Stores MIDI and Viode asset files for testing purposes.
+  - Stores MIDI assets for testing purposes.
 - Developmentn:
   - Stores the current version.
 - MIDI_OUT:
