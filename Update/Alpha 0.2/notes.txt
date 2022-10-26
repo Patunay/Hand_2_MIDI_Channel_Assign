@@ -1,0 +1,50 @@
+fix organization
+list out all dependancies
+finetuning of static keyboard ocntours
+
+
+
+Finetuning:
+
+1) select white/black mode 
+2) isolate pertinent contours 
+    isolate left most bound of contour
+3) process
+4) check if remaining white/black needs processing
+5) end
+
+
+----
+Need to create test presents
+----
+
+Update: 
+Pre_comp_prep -> code cleanup and inclusion in driver, no more separate module.
+
+
+
+
+
+
+------
+Contour_finetuning  architecture
+
+menu to select between: [Black/White] modes
+(depending on selection)
+display contours
+
+for black: [on child window]
+    - trackbars determining x position of Ab[:] + Bb[-1]
+    - label them and show label name on parent window
+
+
+
+
+------
+
+crop_reg = (684, 1080, 12, 1908)
+crop_dim = (396, 1896)
+keyboard_bounds = ((37, 19, 1855, 7), (4, 247, 1892, 250), (37, 19, 4, 247), (1855, 7, 1892, 250))
+hand_bounds = ((-17.565789473684212, 396), (1914.2304526748972, 396))
+bl_wh_lvls = (166, 250)
+sync_onsets = (13033,137267)

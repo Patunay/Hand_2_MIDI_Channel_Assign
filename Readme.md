@@ -10,6 +10,12 @@ At the the current state of the main algorithm in Hands2MIDIChannels, it can onl
 
 Hands2MIDIChannels is powered by openCV, Mediapipe, and MIDO.
 
+Current Stable version: Alpha 0.1
+
+Currently working on Alpha 0.2
+
+- Finetuning to be added to increase contour accuracy.
+
 ## In this repository:
 
 - Archive:

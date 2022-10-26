@@ -6,6 +6,10 @@ _Oct, 2022_
 
 ## Alpha 0.2 update:
 
+- Working on contour finetuning
+- Preliminary contour creation process adjusted.
+  - Now it only creates contours, there is no need to attatch it to a midi number yet.
+  - Fusion of contour with midi number (as array index) to be made after finetuning.
 - In process..
 
 ### Coming up soon:
