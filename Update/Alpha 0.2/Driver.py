@@ -190,6 +190,7 @@ def Pre_comp_prep(crop_dim,bl_wh_lvls):     # Case by case comparison
             tem = []
             finetuning_white_out = []
             finetuning_black_out = []
+            white_out = []
             w_cnt = 0
             b_cnt = 0
             for i in range(88):
@@ -198,6 +199,7 @@ def Pre_comp_prep(crop_dim,bl_wh_lvls):     # Case by case comparison
                     try:
                         tem.append(white_k_count_Array[w_cnt])
                         finetuning_white_out.append(fine_tuning_white_countours[w_cnt]) # for finteuning out
+                        white_out.append(white_k_count_Array[w_cnt])
                         w_cnt +=1
                     except:
                         pass
@@ -212,14 +214,15 @@ def Pre_comp_prep(crop_dim,bl_wh_lvls):     # Case by case comparison
 
             comp_midi_array = np.array(tem)
             finetuning_white_out = np.array(finetuning_white_out)
-            return comp_midi_array,finetuning_white_out,finetuning_black_out
+            white_out = np.array(white_out)
+            return comp_midi_array,finetuning_white_out,finetuning_black_out,white_out
 
         white_countours,black_countours, white_fine_countours = contour_constructor()
-        reference_midi_table_contours, finetuning_white_out, finetuning_black_out = midi_note_creation(white_countours,black_countours,white_fine_countours)
-        return reference_midi_table_contours, finetuning_white_out, finetuning_black_out
+        reference_midi_table_contours, finetuning_white_out, finetuning_black_out,white_out = midi_note_creation(white_countours,black_countours,white_fine_countours)
+        return reference_midi_table_contours, finetuning_white_out, finetuning_black_out, white_out
 
-    midi_event_ref_table, finetuning_white_out, finetuning_black_out = preliminary_creation_of_arrays()
-    return midi_event_ref_table, finetuning_white_out, finetuning_black_out
+    midi_event_ref_table, finetuning_white_out, finetuning_black_out, white_out = preliminary_creation_of_arrays()
+    return midi_event_ref_table, finetuning_white_out, finetuning_black_out, white_out
 
 '''
 ASSETS:
@@ -343,13 +346,13 @@ def TEST_Hand2MIDIChannelAssign():
 
 
     # Final preparations:
-    midi_event_with_contours, finetuning_white_out, finetuning_black_out = Pre_comp_prep(crop_dim,bl_wh_lvls)
+    midi_event_with_contours, finetuning_white_out, finetuning_black_out, white_out = Pre_comp_prep(crop_dim,bl_wh_lvls)
 
 
 
     # contour_debug.main(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours,finetuning_white_out)    # takes combined contours + midi note index
 
-    Contour_finetuning.main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out)
+    Contour_finetuning.main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out, white_out)
 
     # Finetuning module
 
