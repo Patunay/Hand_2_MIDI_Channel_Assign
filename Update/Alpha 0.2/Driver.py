@@ -1,10 +1,11 @@
+from tkinter import Y
 import Set_Crop_Reg
 import Keyboard_Area_SetUp_Top
 import Keyboard_Area_SetUp_Bot
 import Set_bl_wh_Lvls
 import Video_Midi_Sync
 import Midi_Onset2Frame
-# import Compare
+import Compare
 import Consolidate_Midi
 
 import contour_debug
@@ -224,6 +225,79 @@ def Pre_comp_prep(crop_dim,bl_wh_lvls):     # Case by case comparison
     midi_event_ref_table, finetuning_white_out, finetuning_black_out, white_out = preliminary_creation_of_arrays()
     return midi_event_ref_table, finetuning_white_out, finetuning_black_out, white_out
 
+def final_midi_note_creation(fixed_bl_contours, fixed_wh_contours, white_key_level):
+    # Midi Note Number constructor [clasified by white/black]
+    # Black
+    b_k_gen = [22,25,27,30,32]
+    l = []
+    for i in b_k_gen:
+        l.append(i)
+    for i in range(1,10):
+        b_k_gen[0] = b_k_gen[0]+12
+        b_k_gen[1] = b_k_gen[1]+12
+        b_k_gen[2] = b_k_gen[2]+12
+        b_k_gen[3] = b_k_gen[3]+12
+        b_k_gen[4] = b_k_gen[4]+12
+
+        l.append(b_k_gen[0]) 
+        l.append(b_k_gen[1])
+        l.append(b_k_gen[2])
+        l.append(b_k_gen[3])
+        l.append(b_k_gen[4])
+    black_midi_notes = l
+
+    # White
+    w_k_gen = [21,23,24,26,28,29,31]
+    l = []
+    for i in w_k_gen:
+        l.append(i)
+    for i in range(1,11):
+        w_k_gen[0] = w_k_gen[0]+12
+        w_k_gen[1] = w_k_gen[1]+12
+        w_k_gen[2] = w_k_gen[2]+12
+        w_k_gen[3] = w_k_gen[3]+12
+        w_k_gen[4] = w_k_gen[4]+12
+        w_k_gen[5] = w_k_gen[5]+12
+        w_k_gen[6] = w_k_gen[6]+12
+
+        l.append(w_k_gen[0]) 
+        l.append(w_k_gen[1])
+        l.append(w_k_gen[2])
+        l.append(w_k_gen[3])
+        l.append(w_k_gen[4])
+        l.append(w_k_gen[5])
+        l.append(w_k_gen[6])
+    white_midi_notes = l
+
+    # Fix white contours "y" positions
+    for i in np.arange(52):
+        fixed_wh_contours[i,[1,2],0,1] = 0  
+        fixed_wh_contours[i,[0,3],0,1] = white_key_level
+
+    # conform both in ascending order
+    tem = []
+    w_cnt = 0
+    b_cnt = 0
+    for i in range(88):
+        i += 21 
+        if i in white_midi_notes:
+            try:
+                tem.append(fixed_wh_contours[w_cnt])
+                w_cnt +=1
+            except:
+                pass
+
+        elif i in black_midi_notes:
+            try:
+                tem.append(fixed_bl_contours[b_cnt])
+                b_cnt +=1
+            except:
+                pass
+
+    comp_midi_array = np.array(tem)
+    return comp_midi_array
+
+
 '''
 ASSETS:
 
@@ -277,8 +351,7 @@ def Hand2MIDIChannelAssign():
     midi_path = "Assets/Midi_assets/midi_asset2.mid"
 
     # Initial Video preparation
-    crop_reg, crop_dim = Set_Crop_Reg.main(vid_path)    # Works
-
+    crop_reg, crop_dim = Set_Crop_Reg.main(vid_path)
     tp_kb_bound = Keyboard_Area_SetUp_Top.main(vid_path,crop_reg,crop_dim) # Sets Top Bound # Works
     bt_kb_bound = Keyboard_Area_SetUp_Bot.main(vid_path,crop_reg,crop_dim,tp_kb_bound) # Sets Bot Bound # Works
     hand_bound = crop_reg[1]-crop_reg[0]    # Y_b - Y_a = Y axis value of "bt_kb_bound"
@@ -287,29 +360,21 @@ def Hand2MIDIChannelAssign():
     trans_matrix = trans_matrix_calc(crop_dim,keyboard_bounds,hand_bounds)
     bl_wh_lvls = Set_bl_wh_Lvls.main(vid_path,crop_reg,crop_dim,trans_matrix)
 
-
     # Video-MIDI sync
     sync_onsets = Video_Midi_Sync.main(vid_path)
     synqued_midi_data = Midi_Onset2Frame.main(sync_onsets,midi_path)
 
 
     # Final preparations:
-    midi_event_with_contours, finetuning_white_out = Pre_comp_prep(crop_dim,bl_wh_lvls)
-
-
-
-    contour_debug.main(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours,finetuning_white_out)    # takes combined contours + midi note index
-
-    # Finetuning module
-
-
-
+    midi_event_with_contours, finetuning_white_out, finetuning_black_out, white_out = Pre_comp_prep(crop_dim,bl_wh_lvls)
+    final_bl_contours,final_wh_contours = Contour_finetuning.main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out)
+    final_contours = final_midi_note_creation(final_bl_contours,final_wh_contours,bl_wh_lvls[1])
 
     # Main Algorithm
-    # handAsign_list = Compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours)
+    handAsign_list = Compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
 
     # Create Output
-    # Consolidate_Midi.main(midi_path,handAsign_list)
+    Consolidate_Midi.main(midi_path,handAsign_list)
     return
 
 def TEST_Hand2MIDIChannelAssign():
@@ -350,11 +415,16 @@ def TEST_Hand2MIDIChannelAssign():
 
 
 
-    # contour_debug.main(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours,finetuning_white_out)    # takes combined contours + midi note index
 
-    Contour_finetuning.main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out, white_out)
+    final_bl_contours,final_wh_contours = Contour_finetuning.main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out)
 
-    # Finetuning module
+    final_contours = final_midi_note_creation(final_bl_contours,final_wh_contours,bl_wh_lvls[1])
+
+    # contour_debug.main(vid_path,crop_reg,crop_dim,trans_matrix,final_contours)    # takes combined contours + midi note index
+
+
+
+
 
 
 

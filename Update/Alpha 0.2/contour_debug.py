@@ -18,8 +18,7 @@ def check_black_k(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contou
             return 
 
 
-def check_white_k(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours,finetuning_white_out):  # Case by case comparison
-    print(len(finetuning_white_out))
+def check_white_k(vid_path,crop_reg,crop_dim,trans_matrix,contours):  # Case by case comparison
     cap = cv.VideoCapture(vid_path)
 
     while True:
@@ -31,20 +30,20 @@ def check_white_k(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contou
         a_locator = [0,7,14,21,28,35,42,49,51]
         cl_sl = 0
 
-
-
-        for i in arange(len(finetuning_white_out)):
-            if i in a_locator:
-                cl_sl = 2
-                cv.drawContours(trans_frame,[finetuning_white_out[i]],0,colors[cl_sl],-1)
-                cl_sl = 0
-            else:
-                cv.drawContours(trans_frame,[finetuning_white_out[i]],0,colors[cl_sl],-1)
-                if cl_sl == 0:
-                    cl_sl = 1
-                else:
+        for i in arange(len(contours)):
+            if i not in bl_l:
+                if i in a_locator:
+                    cl_sl = 2
+                    cv.drawContours(trans_frame,[contours[i]],0,colors[cl_sl],-1)
                     cl_sl = 0
-
+                else:
+                    cv.drawContours(trans_frame,[contours[i]],0,colors[cl_sl],-1)
+                    if cl_sl == 0:
+                        cl_sl = 1
+                    else:
+                        cl_sl = 0
+            else:
+                pass
 
 
         cv.imshow("White key check",trans_frame)
@@ -55,9 +54,9 @@ def check_white_k(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contou
 
 
 
-def main(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours,finetuning_white_out):
+def main(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours):
     check_black_k(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours)
-    check_white_k(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours,finetuning_white_out)
+    check_white_k(vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours)
     cv.destroyAllWindows
     return
 

@@ -7,9 +7,8 @@ import numpy as np
 import cv2 as cv
 
 # Output variables
-key_levels = ()
 updated_black_k_contours = []
-
+updated_white_k_contours = []
 
 class contourfinetuning_black:
     def __init__(self,root,vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out):
@@ -279,7 +278,7 @@ class contourfinetuning_black:
             if self.cap.isOpened():
                 self.cap.release()
 
-class contourfinetuning_white:  # needs to be adjusted for white keys
+class contourfinetuning_white:  
     def __init__(self,root,vid_path,crop_reg,crop_dim,trans_matrix,finetuning_white_out):   # import both finetuning and literal white contours?
         self.root=root
         self.root.title("Set Key Levels")
@@ -287,7 +286,6 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
         self.vid = self.VideoCapture(vid_path,crop_reg,crop_dim,trans_matrix,self.finetuning_white_out)
 
         self.handles_contours = [0,5,10,15,20,25,30,35]
-
 
         # Modify trackbars with As + last C [9 in total]
         # 8 trackbars for As[:]    # Any possibility for non literal definition of Tk().scale objects?
@@ -303,27 +301,27 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
         self.trackbar_A2.set(self.finetuning_white_out[14,0,0,0])
         self.trackbar_A2.pack(anchor=W)
 
-        self.trackbar_A3 = Scale(self.root, from_=self.finetuning_white_out[14,0,0,0]+1, to=self.finetuning_white_out[28,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="Bb0")
+        self.trackbar_A3 = Scale(self.root, from_=self.finetuning_white_out[14,0,0,0]+1, to=self.finetuning_white_out[28,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="A3")
         self.trackbar_A3.set(self.finetuning_white_out[21,0,0,0])
         self.trackbar_A3.pack(anchor=W)
 
-        self.trackbar_A4 = Scale(self.root, from_=self.finetuning_white_out[21,0,0,0]+1, to=self.finetuning_white_out[35,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="Bb0")
+        self.trackbar_A4 = Scale(self.root, from_=self.finetuning_white_out[21,0,0,0]+1, to=self.finetuning_white_out[35,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="A4")
         self.trackbar_A4.set(self.finetuning_white_out[28,0,0,0])
         self.trackbar_A4.pack(anchor=W)
 
-        self.trackbar_A5 = Scale(self.root, from_=self.finetuning_white_out[28,0,0,0]+1, to=self.finetuning_white_out[42,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="Bb0")
+        self.trackbar_A5 = Scale(self.root, from_=self.finetuning_white_out[28,0,0,0]+1, to=self.finetuning_white_out[42,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="A5")
         self.trackbar_A5.set(self.finetuning_white_out[35,0,0,0])
         self.trackbar_A5.pack(anchor=W)
 
-        self.trackbar_A6 = Scale(self.root, from_=self.finetuning_white_out[35,0,0,0]+1, to=self.finetuning_white_out[49,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="Bb0")
+        self.trackbar_A6 = Scale(self.root, from_=self.finetuning_white_out[35,0,0,0]+1, to=self.finetuning_white_out[49,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="A6")
         self.trackbar_A6.set(self.finetuning_white_out[42,0,0,0])
         self.trackbar_A6.pack(anchor=W)
 
-        self.trackbar_A7 = Scale(self.root, from_=self.finetuning_white_out[42,0,0,0]+1, to=self.finetuning_white_out[51,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="Bb0")
+        self.trackbar_A7 = Scale(self.root, from_=self.finetuning_white_out[42,0,0,0]+1, to=self.finetuning_white_out[51,0,0,0]-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="A7")
         self.trackbar_A7.set(self.finetuning_white_out[49,0,0,0])
         self.trackbar_A7.pack(anchor=W)
 
-        self.trackbar_C8 = Scale(self.root, from_=self.finetuning_white_out[49,0,0,0]+1, to=self.vid.width-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="Bb0")
+        self.trackbar_C8 = Scale(self.root, from_=self.finetuning_white_out[49,0,0,0]+1, to=self.vid.width-1,orient=HORIZONTAL,sliderlength=15,length=self.vid.width/2,label="C8")
         self.trackbar_C8.set(self.finetuning_white_out[51,0,0,0])
         self.trackbar_C8.pack(anchor=W)
 
@@ -348,8 +346,8 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
         self.root.after(self.delay, self.update)
 
     def end_process(self):
-        global updated_black_k_contours
-        updated_black_k_contours = self.vid.updated_array
+        global updated_white_k_contours
+        updated_white_k_contours = self.vid.updated_array
         self.root.destroy()
 
     class VideoCapture:
@@ -374,12 +372,12 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
                 a = 0
                 b = 7
                 total_distances = []  
-                for i in range(8):
+                for i in range(8):  # 0 to 7
                     if i == 7:
-                        total_distance = array[51,2,0,0] - array[49,2,0,0]
+                        total_distance = array[51,0,0,0] - array[49,0,0,0]
                         total_distances.append(total_distance)
                         break
-                    total_distance = array[b,2,0,0] - array[a,2,0,0]
+                    total_distance = array[b,0,0,0] - array[a,0,0,0]
                     total_distances.append(total_distance)
                     a += 7
                     b += 7
@@ -447,56 +445,7 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
                     temp_percent = []
                 return final_percent
 
-            def calculate_inner_distances(self,array):
-                stage_counter = 0
-                index_substractor_factor = 0
-                macro_distance_container = []
-                tep_d_container = []
-
-                for i in range(42):
-                    if i == 0:  # 1st case handle
-                        prev_x = array[i,0,0,0] # get x pos of key note
-                        stage_counter += 1
-                        continue
-
-                    elif stage_counter == 0:  # 1st case handle
-                        i = i - index_substractor_factor    # compensation for repeated contours
-                        prev_x = array[i,0,0,0] # get x pos of key note
-                        stage_counter += 1
-                        continue
-
-
-                    elif i == 41:   # Last commit case handle
-                        i = i - index_substractor_factor    # compensation for repeated contours
-                        d = array[i,0,0,0] - prev_x
-                        tep_d_container.append(d)
-
-                        macro_distance_container.append(tep_d_container)    # commit to macro container
-                        index_substractor_factor
-                        tep_d_container = []    # reset temporal container
-                        stage_counter = 0   # reset counter
-                        continue 
-
-
-                    elif stage_counter == 5:  # last case handle
-                        i = i - index_substractor_factor    # compensation for repeated contours
-                        d = array[i,0,0,0] - prev_x
-                        tep_d_container.append(d)
-
-                        macro_distance_container.append(tep_d_container)    # commit to macro container
-                        index_substractor_factor += 1
-                        tep_d_container = []    # reset temporal container
-                        stage_counter = 0   # reset counter
-                        continue
-
-                    else:
-                        i = i - index_substractor_factor    # compensation for repeated contours
-                        d = array[i,0,0,0] - prev_x
-                        tep_d_container.append(d)
-                        prev_x = array[i,0,0,0] # update new substraction factor
-                        stage_counter += 1
-                        continue
-
+            
                 return macro_distance_container
 
             def update_display_contours(self, original_contour_array, current_state):   # outside update loop, no need to initialize the function evey update.
@@ -510,20 +459,18 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
                     canvas_array[i,2:4,0,0] = canvas_array[i,0,0,0] + width # Mantain original width
 
                 # Inner Notes update:
-                # calcualte updated key_note distances
+                # calculate updated key_note distances
                 new_key_notes_distances = self.calculate_total_distances(canvas_array)
-                print(new_key_notes_distances)
 
                 # correlate outer sector distances with percentages and create percentages
                 new_distances = []
                 for k,i in enumerate(new_key_notes_distances):
-                    if k == 7:  ### FIXIXIXIIXIX        ################
-                        update_d = i * ((100/3)/100)
+                    if k == 7:
+                        update_d = i * ((100/2)/100)
                         new_distances.append(update_d)
                     else:
                         update_d = i * (self.total_inner_percentage/100)
                         new_distances.append(update_d)
-                print(new_distances)
 
                 stage_tracker = 0
                 sector_tracker = 0
@@ -533,7 +480,7 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
                         sector_tracker += 1
                     if i in self.key_notes_indexes: # if it is key note, update width
                         if i == 51:
-                            print(self.width, canvas_array[i,0,0,0])
+                            # print(self.width, canvas_array[i,0,0,0])
                             new_width = self.width - canvas_array[i,0,0,0] # Update width
                             canvas_array[i,2:4,0,0] = canvas_array[i,0,0,0] + new_width
                             pass
@@ -544,104 +491,12 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
                         canvas_array[i,0:2,0,0] = canvas_array[i-1,0,0,0] + new_distances[sector_tracker]    # Update x position
                         canvas_array[i,2:4,0,0] = canvas_array[i,0,0,0] + new_distances[sector_tracker] # Update width
                         stage_tracker += 1
-
-
-
-
-
-                # # 1 by 1
-                # # SECTOR 1
-                # canvas_array[1,0:2,0,0] = canvas_array[0,0,0,0] + new_distances[0]    # Update x position
-                # canvas_array[1,2:4,0,0] = canvas_array[1,0,0,0] + new_distances[0] # Adjust width
-
-                # canvas_array[2,0:2,0,0] = canvas_array[1,0,0,0] + new_distances[0]    # Update x position
-                # canvas_array[2,2:4,0,0] = canvas_array[2,0,0,0] + new_distances[0] # Adjust width
-
-                # canvas_array[3,0:2,0,0] = canvas_array[2,0,0,0] + new_distances[0]    # Update x position
-                # canvas_array[3,2:4,0,0] = canvas_array[3,0,0,0] + new_distances[0] # Adjust width
-
-                # canvas_array[4,0:2,0,0] = canvas_array[3,0,0,0] + new_distances[0]    # Update x position
-                # canvas_array[4,2:4,0,0] = canvas_array[4,0,0,0] + new_distances[0] # Adjust width
-
-                # canvas_array[5,0:2,0,0] = canvas_array[4,0,0,0] + new_distances[0]    # Update x position
-                # canvas_array[5,2:4,0,0] = canvas_array[5,0,0,0] + new_distances[0] # Adjust width
-
-                # canvas_array[6,0:2,0,0] = canvas_array[5,0,0,0] + new_distances[0]    # Update x position
-                # canvas_array[6,2:4,0,0] = canvas_array[6,0,0,0] + new_distances[0] # Adjust width
-                # #                                                           +1
-
-                # # SECTOR 2
-                # canvas_array[8,0:2,0,0] = canvas_array[7,0,0,0] + new_distances[1]    # Update x position
-                # canvas_array[8,2:4,0,0] = canvas_array[8,0,0,0] + new_distances[1] # Adjust width
-
-                # canvas_array[9,0:2,0,0] = canvas_array[8,0,0,0] + new_distances[1]    # Update x position
-                # canvas_array[9,2:4,0,0] = canvas_array[9,0,0,0] + new_distances[1] # Adjust width
-
-                # canvas_array[10,0:2,0,0] = canvas_array[9,0,0,0] + new_distances[1]    # Update x position
-                # canvas_array[10,2:4,0,0] = canvas_array[10,0,0,0] + new_distances[1] # Adjust width
-
-                # canvas_array[11,0:2,0,0] = canvas_array[10,0,0,0] + new_distances[1]    # Update x position
-                # canvas_array[11,2:4,0,0] = canvas_array[11,0,0,0] + new_distances[1] # Adjust width
-
-                # canvas_array[12,0:2,0,0] = canvas_array[11,0,0,0] + new_distances[1]    # Update x position
-                # canvas_array[12,2:4,0,0] = canvas_array[12,0,0,0] + new_distances[1] # Adjust width
-
-                # canvas_array[13,0:2,0,0] = canvas_array[12,0,0,0] + new_distances[1]    # Update x position
-                # canvas_array[13,2:4,0,0] = canvas_array[13,0,0,0] + new_distances[1] # Adjust width
-                # #                                                           +1
-
-
-
-
-                # # Adjust key_note width
-                # canvas_array[0,2:4,0,0] = canvas_array[0,0,0,0] + new_distances[0] 
-                # canvas_array[7,2:4,0,0] = canvas_array[7,0,0,0] + new_distances[1] 
-                # canvas_array[14,2:4,0,0] = canvas_array[14,0,0,0] + new_distances[2] 
-                # canvas_array[21,2:4,0,0] = canvas_array[21,0,0,0] + new_distances[3] 
-                # canvas_array[28,2:4,0,0] = canvas_array[28,0,0,0] + new_distances[4] 
-                # canvas_array[35,2:4,0,0] = canvas_array[35,0,0,0] + new_distances[5] 
-                # canvas_array[42,2:4,0,0] = canvas_array[42,0,0,0] + new_distances[6] 
-                # # canvas_array[49,2:4,0,0] = canvas_array[49,0,0,0] + new_distances[7] 
-                # # canvas_array[51,2:4,0,0] = canvas_array[51,0,0,0] + new_distances[8] 
-
-
-
-
-                # stage_counter = 0
-                # new_d_index = 0
-                # for i in np.arange(52):
-                #     if i not in self.key_notes_indexes:
-                #         if stage_counter == 7:
-                #             new_d_index += 1    # next sector
-                #             stage_counter = 0   # reset stage
-                #         else:
-                #             canvas_array[i,0:2,0,0] = canvas_array[i-1,0,0,0] + new_distances[new_d_index]    # Update x position
-                #             canvas_array[i,2:4,0,0] = canvas_array[i,0,0,0] + new_distances[new_d_index] # Adjust width
-                #             stage_counter += 1  # stage tracker
-                    # else:
-                    #     canvas_array[i,2:4,0,0] = canvas_array[i,0,0,0] + new_distances[new_d_index] # Adjust width
-                    #     stage_counter += 1  # stage tracker
-
-
-                # for x,i in enumerate(self.key_notes_indexes):   # Adjust width of key notes
-                #     if x == 6:
-                #         x = 5
-                #     else:
-                #         canvas_array[i,2:4,0,0] = canvas_array[i,0,0,0] + new_distances[x] # Mantain original width
-
-
-
-
-
-
                 return canvas_array
 
             def get_frame(self,A0,A1,A2,A3,A4,A5,A6,A7,C8):      # read current x values of contours and calculate other contours based on that, then, draw contours  
                 current_state = (A0,A1,A2,A3,A4,A5,A6,A7,C8)  # reads current state
 
                 self.updated_array = self.update_display_contours(self.ORIGINAL_finetuning_white_out, current_state)   # modify display array according to current_state
-
-                # self.updated_array = self.finetuning_white_out
 
                 if self.cap.isOpened():
                     ret, frame = self.cap.read()
@@ -671,26 +526,19 @@ class contourfinetuning_white:  # needs to be adjusted for white keys
                 if self.cap.isOpened():
                     self.cap.release()        
 
+def main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out):
+    global updated_black_k_contours
+    global updated_white_k_contours
 
-def main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out,white_out):
-    flag = input("Do you wish to modify the contours? [Y/N] ")
-    if flag == "N": # Skip entire module
-        return
-    elif flag == "Y":
-        selector = int(input("Modify Black[0] or White[1]? "))
-        if selector == 0:   # Black finetuner
-            root = Tk()
-            contourfinetuning_black(root,vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out)
-            global updated_black_k_contours
-            return updated_black_k_contours
-        elif selector == 1: # White finetuner
-            root = Tk()
-            contourfinetuning_white(root,vid_path,crop_reg,crop_dim,trans_matrix,finetuning_white_out)
-            pass
-        else:   # Exception error
-            return
-    else:   # Exception error
-        return       
+    root = Tk()
+    contourfinetuning_black(root,vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out)
+
+    root = Tk()
+    contourfinetuning_white(root,vid_path,crop_reg,crop_dim,trans_matrix,finetuning_white_out)
+    return updated_black_k_contours, updated_white_k_contours
+
+
+
 
 if __name__ == "__main__":
     main()
