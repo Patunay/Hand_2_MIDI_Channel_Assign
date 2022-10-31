@@ -1,14 +1,14 @@
-from tkinter import Y
 import Set_Crop_Reg
 import Keyboard_Area_SetUp_Top
 import Keyboard_Area_SetUp_Bot
 import Set_bl_wh_Lvls
 import Video_Midi_Sync
 import Midi_Onset2Frame
-import Compare
+# import Compare
+import debug_compare
 import Consolidate_Midi
 
-import contour_debug
+# import contour_debug
 import Contour_finetuning
 
 import numpy as np
@@ -333,8 +333,8 @@ Test 4:
 Assets/Video_assets/video4.MOV
 Assets/Midi_assets/midi_asset4.mid
 
-start:
-end:
+start: 4067
+end: 1344167
 -----------------------------------------------
 -----------------------------------------------
 '''
@@ -347,8 +347,8 @@ end:
 
 
 def Hand2MIDIChannelAssign():
-    vid_path = "Assets/Video_assets/video2.mov"
-    midi_path = "Assets/Midi_assets/midi_asset2.mid"
+    vid_path = "Assets/Video_assets/video4.MOV"
+    midi_path = "Assets/Midi_assets/midi_asset4.mid"
 
     # Initial Video preparation
     crop_reg, crop_dim = Set_Crop_Reg.main(vid_path)
@@ -371,7 +371,8 @@ def Hand2MIDIChannelAssign():
     final_contours = final_midi_note_creation(final_bl_contours,final_wh_contours,bl_wh_lvls[1])
 
     # Main Algorithm
-    handAsign_list = Compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
+    # handAsign_list = Compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
+    handAsign_list = debug_compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
 
     # Create Output
     Consolidate_Midi.main(midi_path,handAsign_list)
@@ -436,10 +437,4 @@ def TEST_Hand2MIDIChannelAssign():
     # Consolidate_Midi.main(midi_path,handAsign_list)
     return
 
-
-# def test():
-#     assets = 
-#     Hand2MIDIChannelAssign(assets)
-
-
-TEST_Hand2MIDIChannelAssign()
+Hand2MIDIChannelAssign()

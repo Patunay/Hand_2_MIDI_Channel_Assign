@@ -1,0 +1,46 @@
+debug example 4
+possible solutions
+refine midi ticks to absolute timing conversion
+lower certainity threshhold
+ioncrese radious of landmark
+
+some contours are not landmarks rendering...(not huge problem since logic layer 3 fixes it)
+some handcrossing will output a incorrect guess (because lower hand is hidden under higher hand and then is p[orccesed as a 1st instance])
+
+BIG ISSUE!!!!!
+starting at 1238, 3rd option is giving inverse results 
+###
+
+
+
+0
+hand not recognized (hnr)
+
+38
+hnr
+
+913
+handcrossing
+
+1009
+hnr
+
+1183-1191
+hnr (unjustifiable)
+
+1238-1239
+? right hand clearly closer
+
+1331
+simile
+
+1394
+simile + ???? wtf
+
+1396
+simile
+
+
+
+
+
