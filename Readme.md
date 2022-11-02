@@ -1,5 +1,16 @@
 # Hands2MIDIChannels <font size="3" >_by Carlos Mauro_ </font>
 
+## Licence
+
+**Copyright (C) {CMG Solutions} - All Rights Reserved**
+ 
+Unauthorized copying of files in this repository, via any medium is **strictly prohibited**
+  
+**Proprietary and confidential**
+  
+*Written by Carlos Camilo Mauro Galvez [cmg.solutions.a@gmail.com], 11/02/2022* 
+
+
 ## Introduction:
 
 Hands2MIDIChannels is a software that aims to provide music composers, improvisers and keyboard instrument performers a tool that will automatically analyze a MIDI file and assigns a MIDI channel depending on which hand played a MIDI event.
