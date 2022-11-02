@@ -1,8 +1,6 @@
 # Hands2MIDIChannels <font size="3" >_by Carlos Mauro_ </font>
 
-## Licence
-
-**Copyright (C) {CMG Solutions} - All Rights Reserved**
+**Copyright © CMG Solutions - All Rights Reserved**
  
 Unauthorized copying of files in this repository, via any medium is **strictly prohibited**
   
