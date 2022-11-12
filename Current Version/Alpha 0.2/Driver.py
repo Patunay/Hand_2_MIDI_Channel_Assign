@@ -4,17 +4,14 @@ import Keyboard_Area_SetUp_Bot
 import Set_bl_wh_Lvls
 import Video_Midi_Sync
 import Midi_Onset2Frame
-# import Compare
-import debug_compare
-import Consolidate_Midi
-
-# import contour_debug
 import Contour_finetuning
+import Compare_update
+import Consolidate_Midi
 
 import numpy as np
 from cv2 import getPerspectiveTransform
 
-
+# Utility functions
 def complete_keyboard_bounds(top_bnd,bot_bnd):
     lft_bnd, rgt_bnd = (top_bnd[0],top_bnd[1],bot_bnd[0],bot_bnd[1]),(top_bnd[2],top_bnd[3],bot_bnd[2],bot_bnd[3])
     return (top_bnd,bot_bnd,lft_bnd,rgt_bnd)
@@ -213,17 +210,16 @@ def Pre_comp_prep(crop_dim,bl_wh_lvls):     # Case by case comparison
                     except:
                         pass
 
-            comp_midi_array = np.array(tem)
             finetuning_white_out = np.array(finetuning_white_out)
             white_out = np.array(white_out)
-            return comp_midi_array,finetuning_white_out,finetuning_black_out,white_out
+            return finetuning_white_out,finetuning_black_out
 
         white_countours,black_countours, white_fine_countours = contour_constructor()
-        reference_midi_table_contours, finetuning_white_out, finetuning_black_out,white_out = midi_note_creation(white_countours,black_countours,white_fine_countours)
-        return reference_midi_table_contours, finetuning_white_out, finetuning_black_out, white_out
+        finetuning_white_out, finetuning_black_out= midi_note_creation(white_countours,black_countours,white_fine_countours)
+        return finetuning_white_out, finetuning_black_out
 
-    midi_event_ref_table, finetuning_white_out, finetuning_black_out, white_out = preliminary_creation_of_arrays()
-    return midi_event_ref_table, finetuning_white_out, finetuning_black_out, white_out
+    finetuning_white_out, finetuning_black_out = preliminary_creation_of_arrays()
+    return finetuning_white_out, finetuning_black_out
 
 def final_midi_note_creation(fixed_bl_contours, fixed_wh_contours, white_key_level):
     # Midi Note Number constructor [clasified by white/black]
@@ -339,46 +335,38 @@ end: 1344167
 -----------------------------------------------
 '''
 
-
-
-# video_asset_container = ["Assets/Video_assets/video1.MOV","Assets/Video_assets/video2.mov","Assets/Video_assets/video3.mov","Assets/Video_assets/video4.MOV"]
-# midi_paths_container = ["Assets/Midi_assets/midi_asset1.mid","Assets/Midi_assets/midi_asset2.mid","Assets/Midi_assets/midi_asset3.mid","Assets/Midi_assets/midi_asset4.mid"]
-
-
-
 def Hand2MIDIChannelAssign():
-    vid_path = "Assets/Video_assets/video4.MOV"
-    midi_path = "Assets/Midi_assets/midi_asset4.mid"
+    vid_path = "Assets/Video_assets/video2.mov"
+    midi_path = "Assets/Midi_assets/midi_asset2.mid"
 
     # Initial Video preparation
-    crop_reg, crop_dim = Set_Crop_Reg.main(vid_path)
+    crop_reg, crop_dim = Set_Crop_Reg.main(vid_path)    # Crop video to interest area
     tp_kb_bound = Keyboard_Area_SetUp_Top.main(vid_path,crop_reg,crop_dim) # Sets Top Bound # Works
     bt_kb_bound = Keyboard_Area_SetUp_Bot.main(vid_path,crop_reg,crop_dim,tp_kb_bound) # Sets Bot Bound # Works
     hand_bound = crop_reg[1]-crop_reg[0]    # Y_b - Y_a = Y axis value of "bt_kb_bound"
     keyboard_bounds = complete_keyboard_bounds(tp_kb_bound,bt_kb_bound) # Calculates Keyboard Bounds
     hand_bounds = calc_hand_bounds(keyboard_bounds,hand_bound)  # Calculates Hand Bounds in respect to Keyboard bounds
-    trans_matrix = trans_matrix_calc(crop_dim,keyboard_bounds,hand_bounds)
-    bl_wh_lvls = Set_bl_wh_Lvls.main(vid_path,crop_reg,crop_dim,trans_matrix)
+    trans_matrix = trans_matrix_calc(crop_dim,keyboard_bounds,hand_bounds)  # Calculates 2d transfromation matrix
+    bl_wh_lvls = Set_bl_wh_Lvls.main(vid_path,crop_reg,crop_dim,trans_matrix)   # Sets Y levels for black and white keys in the keyboard
 
     # Video-MIDI sync
-    sync_onsets = Video_Midi_Sync.main(vid_path)
-    synqued_midi_data = Midi_Onset2Frame.main(sync_onsets,midi_path)
+    sync_onsets = Video_Midi_Sync.main(vid_path)    # Sets first and last onset corresponding to the MIDI events
+    synqued_midi_data = Midi_Onset2Frame.main(sync_onsets,midi_path)    # Calculates individual onsets for all MIDI events based on first and last onsets
 
 
     # Final preparations:
-    midi_event_with_contours, finetuning_white_out, finetuning_black_out, white_out = Pre_comp_prep(crop_dim,bl_wh_lvls)
-    final_bl_contours,final_wh_contours = Contour_finetuning.main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out)
-    final_contours = final_midi_note_creation(final_bl_contours,final_wh_contours,bl_wh_lvls[1])
+    finetuning_white_out, finetuning_black_out = Pre_comp_prep(crop_dim,bl_wh_lvls) # Sets finetuning for contour position of keyboard keys
+    final_bl_contours,final_wh_contours = Contour_finetuning.main(vid_path,crop_reg,crop_dim,trans_matrix,finetuning_black_out,finetuning_white_out)    # Update contours
+    final_contours = final_midi_note_creation(final_bl_contours,final_wh_contours,bl_wh_lvls[1])    # Append MIDI note information to each contour
 
     # Main Algorithm
-    # handAsign_list = Compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
-    handAsign_list = debug_compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
+    handAsign_list = Compare_update.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)  # Main algorithm, outputs a guess on the handedness
 
     # Create Output
-    Consolidate_Midi.main(midi_path,handAsign_list)
+    Consolidate_Midi.main(midi_path,handAsign_list) # Creates a new MIDI file with updated MIDI channel routing
     return
 
-def TEST_Hand2MIDIChannelAssign():
+def TEST_Hand2MIDIChannelAssign():  # Testing
     vid_path = "Assets/Video_assets/video2.mov"
     midi_path = "Assets/Midi_assets/midi_asset2.mid"
 
@@ -412,7 +400,7 @@ def TEST_Hand2MIDIChannelAssign():
 
 
     # Final preparations:
-    midi_event_with_contours, finetuning_white_out, finetuning_black_out, white_out = Pre_comp_prep(crop_dim,bl_wh_lvls)
+    finetuning_white_out, finetuning_black_out = Pre_comp_prep(crop_dim,bl_wh_lvls)
 
 
 
@@ -424,17 +412,19 @@ def TEST_Hand2MIDIChannelAssign():
     # contour_debug.main(vid_path,crop_reg,crop_dim,trans_matrix,final_contours)    # takes combined contours + midi note index
 
 
-
+    # print(final_contours)
 
 
 
 
 
     # Main Algorithm
-    # handAsign_list = Compare.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,midi_event_with_contours)
+    handAsign_list = Compare_update.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
 
     # Create Output
-    # Consolidate_Midi.main(midi_path,handAsign_list)
+    Consolidate_Midi.main(midi_path,handAsign_list)
     return
 
+# Start
 Hand2MIDIChannelAssign()
+# TEST_Hand2MIDIChannelAssign()

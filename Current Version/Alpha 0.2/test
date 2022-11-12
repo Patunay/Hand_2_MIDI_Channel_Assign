@@ -1,0 +1,6 @@
+a = [None,None]
+print(a)
+
+a[0] = 1
+
+print(a)

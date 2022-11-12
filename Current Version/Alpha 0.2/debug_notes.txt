@@ -44,3 +44,18 @@ simile
 
 
 
+--------------
+Maybe:
+- For events where there is no recognized hand, assign individual channel
+- Only process landmarks [4,8,12,16,20]
+
+
+- Restructure code:
+    - Figure out a better way of getting handness attribute list
+    - Only get landmarks [4,8,12,16,20] for each hand
+    - If no hand detected, route event to renegade_buffer
+    - in for midi_off events, check if value present in regular_buffer OR renegade_buffer
+    - values of renegade_buffer route to separate midi channel
+
+For debugging, show: interest landmarks, Handness on landmark 0, and landmark individual
+

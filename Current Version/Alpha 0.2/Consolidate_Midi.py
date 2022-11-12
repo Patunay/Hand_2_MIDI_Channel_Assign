@@ -8,12 +8,6 @@ def Consolidate_Midi(midi_path, handness_array):
     track = mido.MidiTrack()
     out_mid.tracks.append(track)
 
-
-    counter = 0
-    for event in mid.tracks[0]:
-        if not event.is_meta: # Gets Events
-            counter += 1
-
     meta_msg_cnt = 0
     for i in mid.tracks[0]:
         if i.is_meta:  # Gets Metadata
@@ -23,42 +17,22 @@ def Consolidate_Midi(midi_path, handness_array):
     only_events = mid.tracks[0]
     only_events = only_events[meta_msg_cnt:]
 
-    print(len(only_events))
-    print(len(handness_array))
-
     for origin_mid_event, handness in zip(only_events,handness_array):
         if not origin_mid_event.is_meta: # Gets Events
-            # counter += 1
             if handness[1] == "Left":
-                origin_mid_event.channel = 2
+                origin_mid_event.channel = 1
                 track.append(origin_mid_event)
             elif handness[1] == "Right":
                 origin_mid_event.channel = 5
                 track.append(origin_mid_event)
+            elif handness[1] == None:
+                origin_mid_event.channel = 3
+                track.append(origin_mid_event)               
             else: # If Pedal
-                # print("Pedal?")
-                # print("Origin:",origin_mid_event)
-                origin_mid_event.channel = 1
+                origin_mid_event.channel = 0
                 track.append(origin_mid_event)
-                # print("Update:",origin_mid_event,"\n")
-
-
-    # for i in mid:
-    #     print(i)
-    # print("final", counter)
-
-    out_mid.save("MIDI_OUT/out.mid")
-
-
-    # mid_eval = mido.MidiFile(path, clip=True)
-    # counter = 0
-    # for event in mid_eval.tracks[0]:
-    #     if not event.is_meta: # Gets Events
-    #         counter += 1
-
-    # print("Final Counter",counter) 
+    out_mid.save("Current Version/Alpha 0.2/MIDI_OUT/out.mid")
     return 
-
 
 def main(midi_path,handness_list):
     Consolidate_Midi(midi_path,handness_list)
@@ -66,4 +40,3 @@ def main(midi_path,handness_list):
 
 if __name__ == "__main__":
     main()
-# main("Development/Assets/Midi_assets/midi_asset2.mid")
