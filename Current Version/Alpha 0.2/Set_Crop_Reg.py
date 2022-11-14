@@ -9,6 +9,8 @@ out_angle = 0
 out_croped_area = ()
 
 
+
+
 def rotate_image(mat, angle):
     """
     Rotates an image (angle in degrees) and expands image to avoid cropping

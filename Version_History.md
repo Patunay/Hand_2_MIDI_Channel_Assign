@@ -43,20 +43,21 @@ _Nov, 2022_
 
 ### Coming up soon:
 
-- Fix unwanted messages that are outputed to the terminal regarding Tk() isntances update when the Tk() instance was already terminated.
+- Fix unwanted messages that are outputed to the terminal regarding Tk() instances update when the Tk() instance was already terminated.
 
 ### Eventually:
 
 - Overhaul video/MIDI syncronization.
   - In theory, the user only needs to input the start onset of a MIDI file as it is represented in the corresponding video.
-  - However, while working on this module, I found that they tend to become out sync linearly as the algoprithm iterates thorough the MIDI events in the MIDI file.
+  - However, while working on [Midi_Onset2Frame.py], I found that they tend to linearly become out sync as the
+    algorithm iterates thorough the MIDI events in the MIDI file.
   - To solve this, the algorithm asks for two inputs:
     - Start Onset.
       - Onset for first midi event as it is shown in the video.
     - End Onset.
       - Onset for last midi event as it is shown in the video.
   - The algorthm then scales the onset data to the user defined range and gives accurate results.
-  - Eventually, I want the algoruthm to only need the first onset and to give the same or better results.
+  - Eventually, I want the algorithm to only need the first onset and to give the same or better results.
 
 _Oct, 2022_
 

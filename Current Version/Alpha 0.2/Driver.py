@@ -360,10 +360,10 @@ def Hand2MIDIChannelAssign():
     final_contours = final_midi_note_creation(final_bl_contours,final_wh_contours,bl_wh_lvls[1])    # Append MIDI note information to each contour
 
     # Main Algorithm
-    handAsign_list = Compare_update.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)  # Main algorithm, outputs a guess on the handedness
+    # handAsign_list = Compare_update.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)  # Main algorithm, outputs a guess on the handedness
 
     # Create Output
-    Consolidate_Midi.main(midi_path,handAsign_list) # Creates a new MIDI file with updated MIDI channel routing
+    # Consolidate_Midi.main(midi_path,handAsign_list) # Creates a new MIDI file with updated MIDI channel routing
     return
 
 def TEST_Hand2MIDIChannelAssign():  # Testing
@@ -419,10 +419,10 @@ def TEST_Hand2MIDIChannelAssign():  # Testing
 
 
     # Main Algorithm
-    handAsign_list = Compare_update.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
+    # handAsign_list = Compare_update.main(synqued_midi_data,vid_path,crop_reg,crop_dim,trans_matrix,final_contours)
 
     # Create Output
-    Consolidate_Midi.main(midi_path,handAsign_list)
+    # Consolidate_Midi.main(midi_path,handAsign_list)
     return
 
 # Start
